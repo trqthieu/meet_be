@@ -26,14 +26,15 @@ export class MeetingGateway implements OnGatewayConnection, OnGatewayDisconnect 
     }
     this.rooms.get(data.roomId).add(client.id);
     
-    client.to(data.roomId).emit('user-connected', { userId: data.userId });
+    // client.to(data.roomId).emit('user-connected', { userId: data.userId });
     
     // Send current participants to the new user
     const participants = Array.from(this.rooms.get(data.roomId))
       .filter(id => id !== client.id)
       .map(id => this.users.get(id));
+    console.log('participants>>', participants);
     
-    client.emit('current-participants', participants);
+    this.server.in(data.roomId).emit('current-participants', participants);
   }
 
   @SubscribeMessage('leave-room')
@@ -50,6 +51,14 @@ export class MeetingGateway implements OnGatewayConnection, OnGatewayDisconnect 
   handleAnswer(client: Socket, data: { answer: any; to: string }) {
     client.to(data.to).emit('answer', { answer: data.answer, from: client.id });
   }
+
+   @SubscribeMessage('chat-message')
+  handleChat(client: Socket, data: { text: any; to: string, from: string }) {
+    console.log('handleChat', data);
+    
+    this.server.in(data.to).emit('chat-message', { text: data.text, from: data.from });
+  }
+
 
   @SubscribeMessage('ice-candidate')
   handleIceCandidate(client: Socket, data: { candidate: any; to: string }) {
