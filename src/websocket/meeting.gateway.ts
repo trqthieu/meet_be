@@ -1,6 +1,8 @@
 import { WebSocketGateway, WebSocketServer, SubscribeMessage, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 
+type RoomMap = Record<string, Set<string>>;
+
 @WebSocketGateway({ cors: true })
 export class MeetingGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Server;
@@ -30,7 +32,7 @@ export class MeetingGateway implements OnGatewayConnection, OnGatewayDisconnect 
     
     // Send current participants to the new user
     const participants = Array.from(this.rooms.get(data.roomId))
-      .filter(id => id !== client.id)
+      // .filter(id => id !== client.id)
       .map(id => this.users.get(id));
     console.log('participants>>', participants);
     

@@ -4,10 +4,11 @@ import { AppService } from './app.service';
 import { MeetingGateway } from './websocket/meeting.gateway';
 import { AuthModule } from './auth/auth.module';
 import { MeetingsModule } from './meetings/meetings.module';
+import { CallGateway } from './websocket/call.gateway';
 
 @Module({
   imports: [MeetingsModule, AuthModule],
   controllers: [AppController],
-  providers: [AppService, MeetingGateway],
+  providers: [AppService, CallGateway],
 })
 export class AppModule {}
