@@ -69,11 +69,13 @@ export class CallGateway {
   }
 
   @SubscribeMessage('chat-message')
-  handleChat(client: Socket, data: { text: any; to: string, from: string }) {
-    console.log('handleChat', data);
-    
-    this.server.in(data.to).emit('chat-message', { text: data.text, from: data.from });
-  }
+handleChat(
+  @MessageBody() data: { to: string; from: string; text: string },
+  @ConnectedSocket() client: Socket,
+) {
+  this.server.in(data.to).emit('chat-message', { from: data.from, text: data.text });
+}
+
 
   @SubscribeMessage('leave-room')
   handleLeave(
